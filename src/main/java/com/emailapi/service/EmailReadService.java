@@ -1,0 +1,112 @@
+package com.emailapi.service;
+
+import com.emailapi.exception.BusinessException;
+import com.emailapi.model.EmailContent;
+import com.emailapi.model.EmailMailBoxContents;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
+@Slf4j
+public class EmailReadService {
+
+	@Value("${spring.mail.username}")
+	private String fromEmail;
+
+	@Value("${spring.mail.password}")
+	private String fromPwd;
+
+	private List<EmailContent> emailContentObj = new ArrayList<EmailContent>();
+
+	{
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd0.efgh0@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 1", "Email Content is here for Email #1"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd1.efgh1@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 2", "Email Content is here for Email #2"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd2.efgh2@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 2", "Email Content is here for Email #3"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd3.efgh3@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 3", "Email Content is here for Email #4"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd4.efgh4@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 4", "Email Content is here for Email #5"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd0.efgh0@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 6", "Email Content is here for Email #6"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd1.efgh1@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 7", "Email Content is here for Email #7"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd2.efgh2@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 8", "Email Content is here for Email #8"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd3.efgh3@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 9", "Email Content is here for Email #9"));
+		emailContentObj.add(new EmailContent("xxxx.yyyy@gmail.com", "abcd4.efgh4@gmail.com", "mnlop0.qrst0@gmail.com",
+				"Subj 10", "Email Content is here for Email #10"));
+	}
+
+	public EmailMailBoxContents retriveAllService(String emailID, int indexVal) {
+		final EmailMailBoxContents emailMailBoxContentsObj = new EmailMailBoxContents();
+		log.info("1234Inside the retrieveall endpoint..");
+        int itempageSize=4;
+		try {
+			List<EmailContent> emailContent=new ArrayList<EmailContent>();
+			for(int i=indexVal;i<=itempageSize;i++) {
+				emailContent.add(emailContentObj.get(i));
+			}
+			emailMailBoxContentsObj.setEmailContents(emailContent);
+		} catch (Exception e) {
+			throw new BusinessException();
+		}
+
+		
+		emailMailBoxContentsObj.setTotalnumberOfEmails(10);
+		emailMailBoxContentsObj.setPageItemSize(5);
+		return emailMailBoxContentsObj;
+	}
+
+	public EmailContent singleRetrieveService(String emailID, String subject) throws BusinessException{
+
+		try {
+			/*
+			 * Code snippet to connect and fetch Message Object from Email Server
+			 * 
+			 * 
+			 * 
+			 * Properties properties = new Properties();
+			 * properties.setProperty("mail.imaps.host", "imap.gmail.com");
+			 * properties.setProperty("mail.imaps.port", "993");
+			 * properties.setProperty("mail.transport.protocol", "IMAP");
+			 * properties.setProperty("mail.imap.ssl.trust", "*"); Session emailSession =
+			 * Session.getDefaultInstance(properties); emailSession.setDebug(true);
+			 * 
+			 * Store store = emailSession.getStore("imaps");
+			 * 
+			 * store.connect("imap.gmail.com", fromEmail, fromPwd);
+			 * 
+			 * 
+			 * Folder emailFolder = store.getFolder("INBOX");
+			 * emailFolder.open(Folder.READ_ONLY);
+			 * 
+			 * BufferedReader reader = new BufferedReader(new InputStreamReader(
+			 * System.in));
+			 * 
+			 * Message[] messages = emailFolder.getMessages();
+			 * 
+			 * for (int i = 0; i < messages.length; i++) { Message message = messages[i];
+			 * if(message.getSubject.equals(subject))
+			 * emailContent.setSubject(message.getSubject());
+			 * emailContent.setBody(message.getContent());
+			 * emailContentObj.add(emailContent); } emailFolder.close(false); store.close();
+			 */
+		} catch (Exception e) {
+			throw new BusinessException();
+		}
+		EmailContent emailContent = new EmailContent("xxxx.yyyy@gmail.com", "abcd0.efgh0@gmail.com",
+				"mnlop0.qrst0@gmail.com", "Subj 1", "Email Content is here for Email #1");
+		return emailContent;
+	}
+
+}

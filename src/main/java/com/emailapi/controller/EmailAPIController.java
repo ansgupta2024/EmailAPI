@@ -56,7 +56,7 @@ public class EmailAPIController {
 
 	}
 
-	@GetMapping("/onemail")
+	@GetMapping("/readoneemail")
 	public ResponseEntity<EmailContent> singleRetrieveMail(@RequestParam String emailID, @RequestParam String subject) {
 		String corelationid = UUID.randomUUID().toString();
 		log.info("Inside the retrieveall endpoint : " + corelationid);
@@ -96,7 +96,7 @@ public class EmailAPIController {
 		return new ResponseEntity<String>(responsestr, HttpStatus.OK);
 	}
 
-	@PostMapping("/draft")
+	@PostMapping("/draftemail")
 	public ResponseEntity<String> draftMail(@RequestParam(value = "file", required = false) MultipartFile[] file,
 			String emailID, String to, String cc, String subject, String body) {
 		String corelationid = UUID.randomUUID().toString();
@@ -117,7 +117,7 @@ public class EmailAPIController {
 		return new ResponseEntity<String>(responsestr, HttpStatus.OK);
 	}
 
-	@PutMapping("/draftupdate")
+	@PutMapping("/draftemailupdate")
 	public ResponseEntity<String> draftUpdateMail(@RequestParam String to, String emailID, String cc, String subject,
 			String body) {
 		String corelationid = UUID.randomUUID().toString();

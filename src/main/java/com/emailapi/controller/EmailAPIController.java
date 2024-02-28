@@ -38,37 +38,50 @@ public class EmailAPIController {
 	private EmailContent emailContent = new EmailContent();
 
 	@GetMapping("/readinbox")
-	public ResponseEntity<Object> retreiveAllMail(@RequestParam("emailID") String userEmailID,
-			@RequestParam(name = "startIndex", required = false) String startIndex) {
+	public ResponseEntity<Object> readInbox(@RequestParam("emailID") String userEmailID) {
 		String corelationid = UUID.randomUUID().toString();
 		log.info("Inside the retreiveAllMail endpoint: " + corelationid);
 		try {
-			int startInd = 0;
-			if (!isEmpty(startIndex)) {
-				startInd = Integer.parseInt(startIndex);
+			if (isEmpty(userEmailID)) {
+				return new ResponseEntity<>("Invalid input provided.Please refer Request ID : " + corelationid,
+						HttpStatus.BAD_REQUEST);
 			}
-			log.info("Inside the retrieveall endpoint..");
-			return ResponseEntity.ok(emailReadService.retriveAllService(userEmailID, startInd));
+			return ResponseEntity.ok(emailReadService.retriveAllService(userEmailID, corelationid));
+		} catch (BusinessException e) {
+			log.error("Error happened inside Service Layer : " + corelationid, e);
+			return new ResponseEntity<>("Unexpected error contidition occured while connecting to SMTP Server",
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
-			log.error("Error happened inside sendMail : ", e);
-			return new ResponseEntity<>("Unexpected error contidition occured", HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("Unexpected error contidition occured : " + corelationid, e);
+			return new ResponseEntity<>("Unexpected error contidition occured : " + corelationid,
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
 	@GetMapping("/readoneemail")
-	public ResponseEntity<EmailContent> singleRetrieveMail(@RequestParam String emailID, @RequestParam String subject) {
+	public ResponseEntity<Object> readOneEmail(@RequestParam String emailID, @RequestParam String subject) {
 		String corelationid = UUID.randomUUID().toString();
-		log.info("Inside the retrieveall endpoint : " + corelationid);
-		return ResponseEntity.ok(emailReadService.singleRetrieveService(emailID, subject));
+		log.info("Inside the readOneEmail endpoint : " + corelationid);
+		try {
+			return ResponseEntity.ok(emailReadService.singleRetrieveService(emailID, subject, corelationid));
+		} catch (BusinessException e) {
+			log.error("Error happened inside Service Layer : " + corelationid, e);
+			return new ResponseEntity<>("Unexpected error contidition occured while connecting to SMTP Server",
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (Exception e) {
+			log.error("Unexpected error contidition occured : " + corelationid, e);
+			return new ResponseEntity<>("Unexpected error contidition occured : " + corelationid,
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@PostMapping("/sendermail")
-	public ResponseEntity<String> sendMail(@RequestParam(value = "file", required = false) MultipartFile[] file,
+	public ResponseEntity<String> senderMail(@RequestParam(value = "file", required = false) MultipartFile[] file,
 			@RequestParam("to") String to, @RequestParam("cc") String cc, @RequestParam("subject") String subject,
 			@RequestParam("body") String body) {
 		String corelationid = UUID.randomUUID().toString();
-		log.info("Inside the send endpoint: " + corelationid);
+		log.info("Inside the senderMail endpoint: " + corelationid);
 		String responsestr = "";
 		try {
 			if (isEmpty(to) || isEmpty(subject) || isEmpty(body)) {
@@ -76,31 +89,31 @@ public class EmailAPIController {
 						HttpStatus.BAD_REQUEST);
 			}
 			if (file != null) {
-				responsestr=emailSendService.sendAttachMail(file, to, cc, subject, body, corelationid);
+				responsestr = emailSendService.sendAttachMail(file, to, cc, subject, body, corelationid);
 				responsestr = "Email sent successfully to user : " + to;
 				log.info("Email Service sendAttachMail completed successfully : " + corelationid);
 			} else {
-				responsestr=emailSendService.sendMail(to, cc, subject, body, corelationid);
+				responsestr = emailSendService.sendMail(to, cc, subject, body, corelationid);
 				log.info("Email Service sendMail without attachment completed successfully : " + corelationid);
 			}
 			log.info("Email Service sendMail endpoint completed successfully : " + corelationid);
 
 		} catch (BusinessException e) {
-			log.error("Error happened inside Service Layer : ", e);
+			log.error("Error happened inside Service Layer : " + corelationid, e);
 			return new ResponseEntity<String>("Unexpected error contidition occured while connecting to SMTP Server",
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
-			log.error("Error happened inside sendMail : ", e);
+			log.error("Error happened inside sendMail : " + corelationid, e);
 			return new ResponseEntity<String>("Unexpected error contidition occured", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(responsestr, HttpStatus.OK);
 	}
 
 	@PostMapping("/draftemail")
-	public ResponseEntity<String> draftMail(@RequestParam(value = "file", required = false) MultipartFile[] file,
+	public ResponseEntity<String> draftEmail(@RequestParam(value = "file", required = false) MultipartFile[] file,
 			String emailID, String to, String cc, String subject, String body) {
 		String corelationid = UUID.randomUUID().toString();
-		log.info("Inside the send endpoint..");
+		log.info("Inside the draftEmail endpoint :"+corelationid);
 		String responsestr = "";
 		try {
 			if (file != null) {
@@ -118,20 +131,20 @@ public class EmailAPIController {
 	}
 
 	@PutMapping("/draftemailupdate")
-	public ResponseEntity<String> draftUpdateMail(@RequestParam String to, String emailID, String cc, String subject,
+	public ResponseEntity<String> draftEmailUpdate(@RequestParam String to, String emailID, String cc, String subject,
 			String body) {
 		String corelationid = UUID.randomUUID().toString();
-		log.info("Inside the send endpoint..");
+		log.info("Inside the draftemailupdate endpoint : "+corelationid);
 		String responsestr = "";
 		try {
-			emailContent = emailReadService.singleRetrieveService(emailID, subject);
+			emailContent = emailReadService.singleRetrieveService(emailID, subject,corelationid);
 			boolean deleteDraftMail = emailDraftService.draftDeleteMail(emailContent.getFrom(), emailContent.getTo(),
 					emailContent.getCc(), emailContent.getSubject(), emailContent.getBody());
 			if (deleteDraftMail) {
 				emailDraftService.draftMail(emailContent.getFrom(), emailContent.getTo(), emailContent.getCc(),
 						emailContent.getSubject(), emailContent.getBody());
 			}
-			log.info("Email Service sendMail completed successfully");
+			log.info("Email Service sendMail completed successfully : "+ corelationid);
 
 		} catch (Exception e) {
 			log.error("Error happened inside sendMail : ", e);

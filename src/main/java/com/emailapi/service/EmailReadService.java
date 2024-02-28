@@ -47,27 +47,19 @@ public class EmailReadService {
 				"Subj 10", "Email Content is here for Email #10"));
 	}
 
-	public EmailMailBoxContents retriveAllService(String emailID, int indexVal) {
+	public EmailMailBoxContents retriveAllService(String emailID, String corelationid) throws BusinessException{
 		final EmailMailBoxContents emailMailBoxContentsObj = new EmailMailBoxContents();
-		log.info("1234Inside the retrieveall endpoint..");
-        int itempageSize=4;
-		try {
-			List<EmailContent> emailContent=new ArrayList<EmailContent>();
-			for(int i=indexVal;i<=itempageSize;i++) {
-				emailContent.add(emailContentObj.get(i));
-			}
-			emailMailBoxContentsObj.setEmailContents(emailContent);
+		log.info("Inside the retrieveall endpoint : " + corelationid);
+	try {
+			emailMailBoxContentsObj.setEmailContents(emailContentObj);
+			return emailMailBoxContentsObj;
 		} catch (Exception e) {
 			throw new BusinessException();
 		}
-
 		
-		emailMailBoxContentsObj.setTotalnumberOfEmails(10);
-		emailMailBoxContentsObj.setPageItemSize(5);
-		return emailMailBoxContentsObj;
 	}
 
-	public EmailContent singleRetrieveService(String emailID, String subject) throws BusinessException{
+	public EmailContent singleRetrieveService(String emailID, String subject, String corelationid) throws BusinessException{
 
 		try {
 			/*

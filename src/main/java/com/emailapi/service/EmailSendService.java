@@ -48,7 +48,7 @@ public class EmailSendService {
 			log.info("Email with attachment sent successfully : " + corelationid);
 			return "Email Service sendMail completed successfully";
 		} catch (Exception e) {
-			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server");
+			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server : " +corelationid);
 		}
 
 	}
@@ -70,7 +70,7 @@ public class EmailSendService {
 			log.info("Email with attachment sent successfully : " + corelationid);
 			return "Email Service sendMail without attachment completed successfully";
 		} catch (Exception e) {
-			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server");
+			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server : "+corelationid);
 		}
 	}
 }

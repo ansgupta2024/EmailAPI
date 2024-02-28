@@ -4,15 +4,15 @@ EmailAPI - This is a Spring-boot Restful API developed for handling email relate
 # Project Description
 This API facilitate email related functionalities like sending email, retrieving emails from inbox,  retrieving single email, drafting an email & updating existing fields in drafted email.Its a RestFul API which exposes five endpoints to consume, they are :-
 
-/readinbox - It's a HTTP GET endpoint which enables you to fetch all emails from the user's inbox.
+/emailservice/readinbox - It's a HTTP GET endpoint which enables you to fetch all emails from the user's inbox.
 
-/readoneemail - It's a HTTP GET endpoint which enables you to fetch a single email from the user's mailbox.
+/emailservice/readoneemail - It's a HTTP GET endpoint which enables you to fetch a single email from the user's mailbox.
 
-/sendermail - It's a POST endpoint which enables you to send an email to the user's inbox.
+/emailservice/sendermail - It's a POST endpoint which enables you to send an email to the user's inbox.
 
-/draftemail - It's a POST endpoint which enables you to draft an email and save it in the user's mailbox.
+/emailservice/draftemail - It's a POST endpoint which enables you to draft an email and save it in the user's mailbox.
 
-/draftemailupdate - It's a PUT endpoint which enables you to update an already drafted email and save it in the user's mailbox.
+/emailservice/draftemailupdate - It's a PUT endpoint which enables you to update an already drafted email and save it in the user's mailbox.
 
 
 Security - API to be registered in API Gateway, which will enforce to have oAuth done by API Gateway before sending any traffic to API. Only successfully authenticated clients would be allowed to invoke the endpoints.

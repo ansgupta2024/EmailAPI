@@ -9,8 +9,8 @@ spring:
       on-profile: dev
   mail:
     host: smtp.gmail.com
-    username: ansumanatwork@gmail.com
-    password: vpbjvnwsatkrjrwt
+    username: xxxxxxxxxxxx@gmail.com
+    password: xxxxxxxxxxxxx
     port: 587
     properties:
       mail:

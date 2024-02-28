@@ -6,6 +6,7 @@ import jakarta.mail.Folder;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Properties;
 
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.emailapi.exception.BusinessException;
 
 @Service
+@Slf4j
 public class EmailDraftService {
 
 	@Value("${spring.mail.username}")
@@ -31,7 +33,7 @@ public class EmailDraftService {
 	@Autowired
 	private JavaMailSender javaMailSender;
 
-	public String draftMail(String emailID, String to, String cc, String subject, String body) throws BusinessException{
+	public String draftMail(String emailID, String to, String cc, String subject, String body, String corelationid) throws BusinessException{
 		try {
 			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -62,12 +64,12 @@ public class EmailDraftService {
 			return "Drafted Email saved successfully in mailbox..";
 
 		} catch (Exception e) {
-			throw new BusinessException();
+			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server : "+corelationid);
 		}
 
 	}
 	
-	public boolean draftDeleteMail(String emailID,String to, String cc, String subject, String body) throws BusinessException {
+	public boolean draftEmailUpdateService(String emailID,String to, String cc, String subject, String body, String corelationid) throws BusinessException {
 		
 		try {
 			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -96,13 +98,12 @@ public class EmailDraftService {
 			return true;
 
 		} catch (Exception e) {
-			throw new BusinessException();
-			
+			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server : "+corelationid);		
 		}
 	}
 
 
-	public String draftAttachMail(MultipartFile[] file, String emailID, String to, String cc, String subject, String body)
+	public String draftAttachMail(MultipartFile[] file, String emailID, String to, String cc, String subject, String body, String corelationid)
 			throws BusinessException{
 		try {
 			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -135,11 +136,11 @@ public class EmailDraftService {
 			mimeMessage.setFlag(Flag.DRAFT, true);
 			MimeMessage draftMessages[] = { mimeMessage };
 			draftsMailBoxFolder.appendMessages(draftMessages);
-
+			log.info("Drafted Email with attachment saved successfully in mailbox : " +corelationid);
 			return "Drafted Email with attachment saved successfully in mailbox..";
 
 		} catch (Exception e) {
-			throw new BusinessException();
+			throw new BusinessException("601", "Unexpected error contidition occured while connecting to SMTP Server : "+corelationid);
 		}
 	}
 }

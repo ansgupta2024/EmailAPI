@@ -25,6 +25,10 @@ Deployment Environment - API to be deployed in AWS Cloud EC2 instances
 
 Scalability - API is scalable with autoscaling configuration of min -1 max -4
 
+# Swagger API Documenation
+
+It's available in URL - http://hostname:8080/swagger-ui/index.html#/
+
 # Project Software Specifications
 
 Pre-requisite Softwares/Applications :-

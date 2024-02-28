@@ -46,7 +46,7 @@ public class EmailAPIController {
 				return new ResponseEntity<>("Invalid input provided.Please refer Request ID : " + corelationid,
 						HttpStatus.BAD_REQUEST);
 			}
-			return ResponseEntity.ok(emailReadService.retriveAllService(userEmailID, corelationid));
+			return ResponseEntity.ok(emailReadService.readInboxService(userEmailID, corelationid));
 		} catch (BusinessException e) {
 			log.error("Error happened inside Service Layer : " + corelationid, e);
 			return new ResponseEntity<>("Unexpected error contidition occured while connecting to SMTP Server",
@@ -64,7 +64,7 @@ public class EmailAPIController {
 		String corelationid = UUID.randomUUID().toString();
 		log.info("Inside the readOneEmail endpoint : " + corelationid);
 		try {
-			return ResponseEntity.ok(emailReadService.singleRetrieveService(emailID, subject, corelationid));
+			return ResponseEntity.ok(emailReadService.readOneEmailService(emailID, subject, corelationid));
 		} catch (BusinessException e) {
 			log.error("Error happened inside Service Layer : " + corelationid, e);
 			return new ResponseEntity<>("Unexpected error contidition occured while connecting to SMTP Server",
@@ -113,19 +113,19 @@ public class EmailAPIController {
 	public ResponseEntity<String> draftEmail(@RequestParam(value = "file", required = false) MultipartFile[] file,
 			String emailID, String to, String cc, String subject, String body) {
 		String corelationid = UUID.randomUUID().toString();
-		log.info("Inside the draftEmail endpoint :"+corelationid);
-		String responsestr = "";
+		log.info("Inside the draftEmail endpoint : " +corelationid);
+		String responsestr = "Email draft saved successfully in inbox";
 		try {
 			if (file != null) {
-				responsestr = emailDraftService.draftAttachMail(file, emailID, to, cc, subject, body);
-				log.info("Email Service sendAttachMail completed successfully");
+				responsestr = emailDraftService.draftAttachMail(file, emailID, to, cc, subject, body, corelationid);
+				log.info("Email draft with attachment saved successfully : " +corelationid);
 			}
-			responsestr = emailDraftService.draftMail(emailID, to, cc, subject, body);
-			log.info("Email Service sendMail completed successfully");
+			responsestr = emailDraftService.draftMail(emailID, to, cc, subject, body , corelationid);
+			log.info("Email draft saved successfully in inbox : " +corelationid);
 
 		} catch (Exception e) {
-			log.error("Error happened inside sendMail : ", e);
-			return new ResponseEntity<String>("Error scenario occured", HttpStatus.BAD_REQUEST);
+			log.error("Error happened inside sendMail : " + corelationid, e);
+			return new ResponseEntity<String>("Error scenario occured : " +corelationid, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<String>(responsestr, HttpStatus.OK);
 	}
@@ -135,20 +135,20 @@ public class EmailAPIController {
 			String body) {
 		String corelationid = UUID.randomUUID().toString();
 		log.info("Inside the draftemailupdate endpoint : "+corelationid);
-		String responsestr = "";
+		String responsestr = "Update of drafted email completed successfully in inbox";
 		try {
-			emailContent = emailReadService.singleRetrieveService(emailID, subject,corelationid);
-			boolean deleteDraftMail = emailDraftService.draftDeleteMail(emailContent.getFrom(), emailContent.getTo(),
-					emailContent.getCc(), emailContent.getSubject(), emailContent.getBody());
+			emailContent = emailReadService.readOneEmailService(emailID, subject, corelationid);
+			boolean deleteDraftMail = emailDraftService.draftEmailUpdateService(emailContent.getFrom(), emailContent.getTo(),
+					emailContent.getCc(), emailContent.getSubject(), emailContent.getBody(), corelationid);
 			if (deleteDraftMail) {
 				emailDraftService.draftMail(emailContent.getFrom(), emailContent.getTo(), emailContent.getCc(),
-						emailContent.getSubject(), emailContent.getBody());
+						emailContent.getSubject(), emailContent.getBody(), corelationid);
 			}
-			log.info("Email Service sendMail completed successfully : "+ corelationid);
+			log.info("Update of drafted email completed successfully in inbox : "+ corelationid);
 
 		} catch (Exception e) {
-			log.error("Error happened inside sendMail : ", e);
-			return new ResponseEntity<String>("Error scenario occured", HttpStatus.BAD_REQUEST);
+			log.error("Error happened inside sendMail : " +corelationid, e);
+			return new ResponseEntity<String>("Error scenario occured " +corelationid, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<String>(responsestr, HttpStatus.OK);
 	}
